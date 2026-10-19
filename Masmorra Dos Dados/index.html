@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Masmorra dos Dados</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
+<link rel="apple-touch-icon" href="favicon.png">
+<meta name="theme-color" content="#0b0a08">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css"></head><body><main>
+
+<section id="s-start" class="screen on c">
+<h1>Masmorra<br>dos Dados</h1>
+<p class="sub">As ruínas de Aldrath guardam um dragão e o que resta da chama. Role o d20, gaste seu fôlego com sabedoria e tente não morrer.</p>
+<input id="team" placeholder="Nome da equipe" maxlength="30" aria-label="Nome da equipe">
+<div class="row"><button onclick="go('s-class')">Iniciar jornada</button><button onclick="rules.showModal()">Regras</button><button class="mt" onclick="mt()">Som: ligado</button><button class="mc" onclick="tg()">Cenas: ligadas</button></div>
+</section>
+
+<section id="s-class" class="screen"><h2>Escolha sua classe</h2><div class="cls" id="cls"></div></section>
+
+<section id="s-map" class="screen c">
+<div class="top"><b id="zname">Mapa da Masmorra</b><span>Almas <b id="msouls">0</b></span>
+<span><button onclick="rules.showModal()">Regras</button> <button class="mt" onclick="mt()">Som: ligado</button> <button onclick="location.reload()">Reiniciar</button></span></div>
+<p class="sub">Use as setas, WASD ou os botões para caminhar até a próxima sala.</p>
+<div id="mapwrap"><div id="grid"></div></div>
+<div id="dpad">
+<button onclick="tryMove(0,-1)" aria-label="Cima">▲</button>
+<div class="dpr"><button onclick="tryMove(-1,0)" aria-label="Esquerda">◀</button><button onclick="tryMove(1,0)" aria-label="Direita">▶</button></div>
+<button onclick="tryMove(0,1)" aria-label="Baixo">▼</button>
+</div>
+<p class="st c" id="mapmsg">&nbsp;</p>
+</section>
+
+<section id="s-game" class="screen">
+<div class="top"><b id="room"></b><span>Almas <b id="souls">0</b> · Estus <b id="es">3</b></span>
+<span><button onclick="rules.showModal()">Regras</button> <button class="mt" onclick="mt()">Som: ligado</button> <button class="mc" onclick="tg()">Cenas: ligadas</button> <button onclick="location.reload()">Reiniciar</button></span></div>
+<div class="arena">
+<div class="p" id="hc"><div class="pf" id="hpic"></div><h3 id="hn"></h3>
+<div class="bar hp"><i class="t" id="hpt"></i><i class="f" id="hpf"></i></div>
+<div class="bar sta"><i class="t" id="stt"></i><i class="f" id="stf"></i></div>
+<div class="bar fp"><i class="t" id="fpt"></i><i class="f" id="fpf"></i></div>
+<div class="st" id="hs"></div><div class="st" id="eqs"></div></div>
+<div class="mid"><div class="die" id="die">20</div><div class="st" id="dinfo">&nbsp;</div></div>
+<div class="p" id="mc"><div class="pf" id="mpic"></div><h3 id="mn"></h3>
+<div class="bar en"><i class="t" id="mht"></i><i class="f" id="mhf"></i></div>
+<div class="st" id="mst"></div></div>
+</div>
+<p class="intent" id="intent"></p><p class="st c" id="msg"></p>
+<div class="low"><div class="p" id="menu"></div><div class="p" id="log" aria-live="polite"></div></div>
+</section>
+
+<section id="s-fire" class="screen c">
+<svg class="fire" viewBox="0 0 120 140" width="120" height="140" aria-hidden="true"><ellipse cx="60" cy="126" rx="42" ry="8" fill="#000"/><path class="fl" d="M60 20c14 18 26 30 26 52a26 26 0 0 1-52 0c0-14 8-20 14-32 4 10 8 12 12 4 2-8 0-16 0-24z" fill="#e0832d"/><path d="M60 48c8 12 14 18 14 30a14 14 0 0 1-28 0c0-8 6-14 14-30z" fill="#ffd27a"/><path d="M58 70h4v56h-4zM46 96h28v4H46z" fill="#8a8272"/></svg>
+<h2>Fogueira</h2>
+<p class="sub">Ao descansar, PV, Foco e Estus são restaurados. Troque almas por força antes de seguir.</p>
+<p>Almas: <b id="fsoul"></b> · <span id="fst" class="st"></span></p>
+<div id="up"></div>
+<div class="row"><button onclick="leave()">Descansar e seguir em frente</button></div>
+</section>
+
+<section id="s-end" class="screen c"><h1 id="e-t"></h1><p class="sub" id="e-d"></p>
+<div class="row"><button onclick="go('s-class')">Nova jornada</button></div></section>
+
+<div id="cine"><div class="bar"></div><div class="stage"><div class="sp l" id="sa"></div><div class="sp r" id="sb"></div><div class="fx" id="fx"></div><div class="dmg" id="dmg"></div></div><div class="bar"><p id="cap"></p></div></div>
+<div id="ban"></div>
+
+<dialog id="rules"><h2>Regras</h2><ul>
+<li>Caminhe pelo mapa da masmorra (setas, WASD ou os botões) até alcançar cada sala. Entrar numa sala com inimigo inicia o combate; entrar numa fogueira, o descanso.</li>
+<li>São 3 fases, cada uma com um mapa diferente: Ruínas de Aldrath, Catedral Silenciosa e Abismo de Cinzas. Cada fase tem uma fogueira e termina com um guardião; no fim da última espera o Dragão Ancestral (9 inimigos no total).</li>
+<li><b>Ataque:</b> d20 + bônus contra a CA do alvo. 20 natural é crítico (dano em dobro); 1 natural erra sempre.</li>
+<li><b>Fôlego:</b> cada ação gasta fôlego (+15 por turno). <b>Foco:</b> gasto nas habilidades da classe.</li>
+<li>O inimigo <b>anuncia</b> o próximo golpe. Leia o aviso antes de agir.</li>
+<li><b>Esquivar:</b> o golpe é rolado com desvantagem; contra sopro, reduz o dano à metade.</li>
+<li><b>Aparar:</b> d20 + bônus da classe (CD 11 leve, 14 pesado). Se der certo, o inimigo é atordoado e seu próximo ataque é um contragolpe crítico. Não funciona contra sopro.</li>
+<li><b>Estus:</b> cura 2d8+4 (3 frascos). Almas compram atributos na fogueira.</li>
+<li><b>Espólio:</b> cada inimigo (exceto o dragão) deixa uma arma, armadura ou talismã, sorteado entre seis raridades: Comum, Raro, Épico, Lendário, Mítico e a raríssima Secreta — um único item, o mais forte da masmorra. Equipe ou deixe; o novo item substitui o do mesmo espaço.</li>
+<li>Atalhos: setas/WASD movem no mapa; teclas 1 a 7 escolhem a ação no combate. O botão Som liga e desliga efeitos e ambiente. Clique ou Espaço pula uma cutscene; o botão Cenas as desliga.</li>
+</ul><form method="dialog"><button>Entendi</button></form></dialog>
+<dialog id="loot"><h2>Espólio</h2><p id="lt"></p><div class="row"><button id="lk">Equipar</button><button id="ld">Deixar</button></div></dialog>
+</main>
+<script src="pixel.js"></script>
+<script src="script.js"></script></body></html>

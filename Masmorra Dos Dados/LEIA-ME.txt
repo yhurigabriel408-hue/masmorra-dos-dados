@@ -1,0 +1,4 @@
+Arte pixel (estilo gótico/Blasphemous) já incluída:
+- img/*.png: 13 sprites (classes e inimigos) e mapa-ruinas / mapa-catedral / mapa-abismo.
+- pixel.js: as mesmas imagens embutidas (o jogo funciona mesmo sem a pasta img).
+Para trocar por arte sua, substitua o PNG com o mesmo nome em img/.
